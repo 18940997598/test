@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingsoft.lcgl.business.api.task.mapper.TaskMapper">
+
+    <resultMap id="tasklistDtoMap" type="com.kingsoft.lcgl.business.api.task.dto.TaskListDto">
+        <result property="taskId" column="id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="taskDocumentAdress" column="task_document_adress"/>
+        <result property="taskState" column="task_state"/>
+        <result property="startTime" column="start_time_plan"/>
+        <result property="endTime" column="end_time_plan"/>
+        <result property="userName" column="name"/>
+        <result property="userId" column="user_id"/>
+        <result property="departmentId" column="id"/>
+        <result property="departmentName" column="department_name"/>
+        <result property="img" column="head_img"/>
+    </resultMap>
+
+
+    <insert id="addTask" parameterType="java.util.List" >
+        INSERT INTO project_task(task_order,task_name,start_time_plan,end_time_plan,department_id,user_id,project_id,notes,creat_time,department_user_id)
+        VALUES
+        <foreach collection="taskList" item="item" index="index" separator=",">
+            (
+            #{index}+1,#{item.taskName},#{item.startTime},#{item.endTime},#{item.departmentId},#{item.userId},#{projectId},#{item.describe},unix_timestamp(),#{item.departmentUserId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteTaskByProjectId">
+       DELETE FROM project_task WHERE project_id = #{projectId}
+    </delete>
+
+    <select id="getTaskInfo" resultType="com.kingsoft.lcgl.business.api.task.dto.TaskInfoDto">
+        SELECT id,task_name AS taskName,start_time_plan AS startTime,end_time_plan AS endTime,notes AS taskNotes,task_state AS taskState from project_task
+        WHERE project_id = #{projectId} and user_id = #{userId}
+    </select>
+
+    <select id="getRemarkList" resultType="com.kingsoft.lcgl.business.api.task.dto.RemarkDto">
+        SELECT id,content,task_id AS taskId,creat_time AS creatTime FROM task_remark WHERE task_id = #{taskId}
+    </select>
+
+    <insert id="addTaskRemark">
+        INSERT INTO task_remark(task_id,content,creat_time) VALUES(#{taskId},#{content},unix_timestamp())
+    </insert>
+
+    <select id="getTaskListByProjectId" resultMap="tasklistDtoMap">
+        SELECT task.id,task_name,task_document_adress,
+        task.start_time_plan,task.end_time_plan,
+        task_state,`user`.name,task.user_id,`user`.department_id,de.department_name,`user`.head_img,
+        de.img FROM
+        (SELECT * FROM project_task WHERE project_id = #{projectId})as task
+        LEFT JOIN  `user` ON task.user_id = `user`.id
+        LEFT JOIN department as de ON `user`.department_id  = de.id
+        LEFT JOIN project as pr ON task.project_id = pr.id
+    </select>
+
+    <select id="getInfoTaskSubmit" resultType="com.kingsoft.lcgl.business.api.task.dto.SubmitTaskSendMailDto">
+       SELECT task.task_name AS taskName,pr.project_name AS projectName,us.name AS userName,
+        us.id AS userId,pr.id AS projectId,task.id AS taskId,pr.project_type AS projectTypeId FROM
+        (
+        SELECT * FROM project_task WHERE id = #{taskId}
+        )AS task LEFT JOIN `user` AS us ON task.user_id = us.id LEFT JOIN project as pr ON task.project_id = pr.id
+    </select>
+
+    <update id="submitTask" parameterType="com.kingsoft.lcgl.business.api.task.dto.SubmitTaskRequest">
+        UPDATE project_task SET task_state=1,task_document_adress=#{taskDocumentAdress},end_time=unix_timestamp() WHERE id= #{taskId}
+    </update>
+
+    <update id="updateTaskStateByProjectId">
+        UPDATE project_task SET task_state=1 WHERE project_id = #{projectId}
+    </update>
+
+    <select id="getProjectIdsByUserId" resultType="java.lang.Long">
+        SELECT distinct  project_id FROM project_task WHERE user_id=#{userId}
+    </select>
+
+    <update id="updateFollow">
+        UPDATE project_task SET follow = #{follow} WHERE user_id=#{userId} and project_id = #{projectId}
+    </update>
+
+    <select id="getTaskInfoByProjectId" resultType="com.kingsoft.lcgl.business.api.project.dto.UpdateTaskDto">
+        SELECT id AS taskId,task_name AS taskName,start_time_plan AS startTime,end_time_plan AS endTime,department_id AS departmentId,user_id AS userId,notes AS 'describe'
+        FROM project_task WHERE project_id = #{projectId} ORDER BY task_order ASC
+    </select>
+
+    <update id="updateInfo" parameterType="com.kingsoft.lcgl.business.api.project.dto.UpdateTasksDto">
+        UPDATE project_task SET task_name = #{taskName},start_time_plan =#{startTime} ,end_time_plan = #{endTime},notes = #{describe},department_id = #{departmentId},user_id = #{userId},task_order = #{order}
+        WHERE id = #{taskId}
+    </update>
+
+    <insert id="addOneTask" useGeneratedKeys="true" keyProperty="taskId" parameterType="com.kingsoft.lcgl.business.api.project.dto.UpdateTasksDto">
+        INSERT INTO project_task(task_order,task_name,start_time_plan,end_time_plan,department_id,user_id,project_id,notes,creat_time)
+        VALUES
+            (
+            #{order},#{taskName},#{startTime},#{endTime},#{departmentId},#{userId},#{projectId},#{describe},unix_timestamp()
+            )
+    </insert>
+
+    <delete id="deleteTaskById">
+       DELETE FROM project_task WHERE id = #{taskId}
+    </delete>
+
+    <select id="getNotCompleTask" resultType="com.kingsoft.lcgl.business.api.task.dto.TaskInfoDto">
+      SELECT task_name AS taskName,end_time_plan AS endTime,user_id AS userId,project_id AS projectId FROM project_task WHERE task_state = 0
+    </select>
+
+    <select id="getOrder" resultType="java.lang.Integer">
+        SELECT task_order FROM project_task WHERE id = #{taskId}
+    </select>
+
+    <select id="getNextUserIdOrder" resultType="java.lang.Long">
+         SELECT user_id FROM project_task WHERE project_id = #{projectId} and task_order =#{order}
+    </select>
+
+    <select id="getUserIdByProjectId" resultType="java.lang.Long">
+        SELECT user_id FROM project_task WHERE project_id = #{projectId} and follow = 0
+    </select>
+
+    <select id="queryMinTime" resultType="java.lang.Long">
+        SELECT MIN(end_time) FROM project_task
+    </select>
+
+    <select id="getTaskEveryDayData" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.TaskDayDataDto">
+        SELECT user_id AS userId,COUNT(*) AS taskNumber from project_task WHERE task_state = 1 AND end_time BETWEEN #{startDay} and  #{endDay}
+        GROUP BY user_id
+    </select>
+
+    <select id="getTaskEveryMonthData" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.TaskDayDataDto">
+        SELECT user_id AS userId,COUNT(*) AS taskNumber from project_task WHERE task_state = 1 AND end_time BETWEEN #{startDay} and  #{endDay}
+        GROUP BY user_id
+    </select>
+
+    <select id="getFollow" resultType="java.lang.Long">
+        SELECT follow FROM  project_task WHERE  user_id = #{userId} and project_id = #{projectId}
+    </select>
+
+    <update id="updateState">
+        UPDATE project_task SET task_state = #{state} where id = #{taskId}
+    </update>
+</mapper>

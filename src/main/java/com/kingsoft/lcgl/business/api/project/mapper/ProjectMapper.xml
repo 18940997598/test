@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingsoft.lcgl.business.api.project.mapper.ProjectMapper">
+
+    <resultMap id="testMap" type="com.kingsoft.lcgl.business.api.common.dto.DepartmentDto">
+    </resultMap>
+
+    <insert id="addProject"  useGeneratedKeys="true" keyProperty="id" parameterType="com.kingsoft.lcgl.business.api.project.dto.NewProjectRequest">
+         INSERT INTO project (
+	      project_name,
+	      start_date,
+          end_date,
+          project_describe,
+          project_type,
+          document_address,
+          user_id,
+          creat_time
+          )
+        VALUES
+	    (#{name}, #{startDate}, #{endDate}, #{describe}, #{projectTypeIds}, #{documentAddress},#{userId},unix_timestamp())
+    </insert>
+    <delete id="deleteTaskByProjectId">
+       DELETE FROM project_task WHERE project_id = #{projectId}
+    </delete>
+
+    <select id="getProjectNameByProjectId" resultType="java.lang.String">
+        SELECT  project_name FROM project WHERE id = #{projectId}
+    </select>
+
+    <select id="getProjectInfoByProjectId" resultType="com.kingsoft.lcgl.business.api.project.dto.ProjectDto">
+      SELECT project_name AS projectName,start_date AS startDate,end_date AS endDate,project_describe AS projectDescribe,p.type AS projectTypeName,p.id AS projectType,document_address AS documentAddress,
+              a.user_id AS userId,project_state AS projectState,creat_time AS creatTime ,u.name AS userName,u.mail AS userMail,d.department_name AS userDepartment,a.follow
+      FROM
+       (
+        SELECT  *
+        FROM project
+        WHERE id = #{projectId}
+        ) as a LEFT JOIN `user` as u ON a.user_id = u.id LEFT JOIN department as d ON u.department_id = d.id LEFT JOIN project_type as p ON a.project_type = p.id
+    </select>
+
+    <select id="getOngoingProjects" resultType="com.kingsoft.lcgl.business.api.project.dto.OnGoingProjectsDto">
+        SELECT p.id AS projectId,project_name AS title,project_describe AS content,NAME AS founder,user_id AS founderId,creat_time AS time,project_type AS projectType
+        FROM
+        (
+        SELECT * FROM project
+        WHERE project_state = 0 AND id IN
+        (
+        SELECT project_id FROM project_task
+        WHERE user_id = #{userId}
+        ) OR user_id = #{userId} AND project_state = 0
+        ) AS p
+        LEFT JOIN `user` AS u ON p.user_id = u.id
+    </select>
+    <update id="updateProjectState" >
+        UPDATE project SET project_state=#{type},complete_date=unix_timestamp() WHERE id= #{projectId}
+    </update>
+
+    <select id="getInfoProjectMail" resultType="com.kingsoft.lcgl.business.api.project.dto.CompleteProjectSendMailDto">
+        SELECT pr.id AS projectId,pr.project_name AS projectName,us.`name` AS userName,pr.project_type AS projectTypeId,us.id AS userId  FROM
+        (SELECT * FROM project WHERE id = #{projectId}) AS pr LEFT JOIN `user` as us ON pr.user_id = us.id
+    </select>
+
+    <select id="getTypeNumber" resultType="com.kingsoft.lcgl.business.api.project.dto.StateDto">
+         SELECT project_state AS state,COUNT(project_state) AS  "count" FROM
+        (SELECT project_state FROM project WHERE user_id = #{userId} OR id in (#{projectIds})) AS a
+         GROUP BY project_state
+    </select>
+
+    <select id="getAllProject"  resultType="com.kingsoft.lcgl.business.api.project.dto.ProjectDto">
+        SELECT
+        a.id AS projectId,
+        project_name AS projectName,
+        start_date AS startDate,
+        end_date AS endDate,
+        project_describe AS projectDescribe,
+        a.project_type AS projectType,
+        user_id AS userId,
+        project_state AS projectState,
+        creat_time AS creatTime,
+        u. NAME AS userName
+        FROM (SELECT * FROM project WHERE user_id = #{userId} OR id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            '${item}'
+        </foreach>
+        ) AS a LEFT JOIN `user` AS u ON a.user_id = u.id
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="stateValue!=-1 and stateValue!='' ">
+                AND project_state = #{stateValue}
+            </if>
+            <if test="startDate!=-1 and startDate!='' and startDate != null ">
+                AND creat_time BETWEEN #{startDate} and #{endDate}
+                and project_name like CONCAT('%',#{keyWord},'%')
+            </if>
+            <if test="projectTypeId!=-1 and projectTypeId!='' ">
+                AND project_type = #{projectTypeId}
+            </if>
+        </trim>
+    </select>
+
+    <update id="updateFollow">
+        UPDATE project SET follow = #{follow} WHERE id= #{projectId}
+    </update>
+
+    <update id="updateInfo">
+         UPDATE project SET project_name  = #{projectName},start_date =  #{startTime},end_date = #{endTime} WHERE id  = #{projectId}
+    </update>
+
+    <select id="getIdByProject" resultType="java.lang.Long">
+        SELECT user_id FROM project WHERE id =#{projectId}
+    </select>
+
+    <select id="getProjectData"  resultType="com.kingsoft.lcgl.business.api.datacenter.dto.ProChartDataDto">
+        SELECT p.type AS x,y FROM
+        (SELECT project_type AS type,COUNT(*) AS y FROM project
+         WHERE user_id = #{userId} or id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+         GROUP BY project_type )
+        AS a LEFT JOIN project_type as p ON a.type = p.id
+    </select>
+
+
+</mapper>

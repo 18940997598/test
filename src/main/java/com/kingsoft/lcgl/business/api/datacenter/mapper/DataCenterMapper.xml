@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingsoft.lcgl.business.api.datacenter.mapper.DataCenterMapper">
+
+    <select id="queryMaxDate" resultType="date">
+        SELECT MAX(date) FROM data_task_day
+    </select>
+
+    <select id="queryMaxDateMonth" resultType="date">
+        SELECT MAX(date) FROM data_task_month
+    </select>
+
+
+    <insert id="insertTaskEveryDayDataBatch" parameterType="com.kingsoft.lcgl.business.api.datacenter.dto.TaskDayDataDto">
+        INSERT INTO data_task_day (
+        date,
+        task_number,
+        user_id
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.date},
+            #{item.taskNumber},
+            #{item.userId}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertTaskEveryMonthDataBatch" parameterType="com.kingsoft.lcgl.business.api.datacenter.dto.TaskDayDataDto">
+        INSERT INTO data_task_month (
+        date,
+        task_number,
+        user_id
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.date},
+            #{item.taskNumber},
+            #{item.userId}
+            )
+        </foreach>
+    </insert>
+
+    <select id="getChartData" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.ChartDataDto">
+        SELECT date,task_number AS y FROM data_task_day  WHERE user_id = #{userId} AND date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getRankData" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.RankDataDto">
+       SELECT date,task_number AS total FROM data_task_day WHERE user_id = #{userId} AND date BETWEEN #{startDate} AND #{endDate} ORDER BY total DESC
+    </select>
+
+    <select id="getChartDataByYear" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.ChartDataDto">
+        SELECT date,task_number AS y FROM data_task_month  WHERE user_id = #{userId} AND date BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getRankDataByYear" resultType="com.kingsoft.lcgl.business.api.datacenter.dto.RankDataDto">
+        SELECT date,task_number AS total FROM data_task_month WHERE user_id = #{userId} AND date BETWEEN #{startDate} AND #{endDate} ORDER BY total DESC
+    </select>
+
+
+</mapper>

@@ -1,0 +1,124 @@
+{
+  "groups": [
+    {
+      "name": "c3p0.local",
+      "type": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration"
+    },
+    {
+      "name": "jedis",
+      "type": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "name": "c3p0.local.acquire-increment",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.driver-class",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration"
+    },
+    {
+      "name": "c3p0.local.idle-connection-test-period",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.initial-pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.jdbc-url",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration"
+    },
+    {
+      "name": "c3p0.local.max-idle-time",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.max-pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.min-pool-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "c3p0.local.password",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration"
+    },
+    {
+      "name": "c3p0.local.username",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.mybatis.DataSourceConfiguration"
+    },
+    {
+      "name": "jedis.host",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration"
+    },
+    {
+      "name": "jedis.instance-name",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration"
+    },
+    {
+      "name": "jedis.max-idle",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "jedis.max-total",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "jedis.max-wait-millis",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": 0
+    },
+    {
+      "name": "jedis.port",
+      "type": "java.lang.String",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration"
+    },
+    {
+      "name": "jedis.test-on-borrow",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": false
+    },
+    {
+      "name": "jedis.test-on-return",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": false
+    },
+    {
+      "name": "jedis.timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "com.kingsoft.lcgl.core.redis.JedisConfiguration",
+      "defaultValue": 0
+    }
+  ],
+  "hints": []
+}

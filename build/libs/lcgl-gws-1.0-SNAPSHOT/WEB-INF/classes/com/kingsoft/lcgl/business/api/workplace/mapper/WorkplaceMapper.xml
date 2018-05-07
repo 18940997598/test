@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingsoft.lcgl.business.api.workplace.mapper.WorkplaceMapper">
+
+
+    <select id="getCompleteTask" resultType="java.lang.Integer">
+       SELECT COUNT(user_id) AS completeTask  FROM project_task as task WHERE user_id = #{userId} AND task_state = 1
+    </select>
+
+    <select id="getNotCompleteTask" resultType="java.lang.Integer">
+       SELECT COUNT(user_id) AS notCompleteTask  FROM project_task as task WHERE user_id = #{userId} AND task_state in (0,2)
+    </select>
+</mapper>

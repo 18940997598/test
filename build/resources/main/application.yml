@@ -1,0 +1,56 @@
+c3p0:
+    local:
+        driverClass: com.mysql.jdbc.Driver
+        initialPoolSize: 1
+        minPoolSize: 1
+        maxPoolSize: 100
+        maxIdleTime: 180
+        acquireIncrement: 5
+        idleConnectionTestPeriod: 120
+#       207  测试服务器
+        jdbcUrl: jdbc:mysql://192.168.65.207/test?characterEncoding=utf8
+        username: mysql
+        password: kingsoft
+#       214  腾讯云外网服务器
+#        jdbcUrl: jdbc:mysql://123.206.67.214/lcgl?characterEncoding=utf8
+#        username: root
+#        password: root
+email:
+    user: 18940997598@163.com
+    pwd: Yangkang153829
+    hostName: smtp.163.com
+    fromAdress: 18940997598@163.com
+#    邮件主题配置，注意：内容与key 之间的顺序对应  改枚举
+    subject: 注册验证邮件,任务通知邮件
+    subjectKey: REGIST,NOTICE
+jedis:
+    maxTotal: 10000
+    maxIdle: 5000
+    maxWaitMillis: 1000
+    testOnBorrow: true
+    testOnReturn: true
+    timeout: 1000
+#       208 测试服务器
+    host: 192.168.65.208
+#       214  腾讯云外网服务器
+#    host: 123.206.67.214
+    port: 6379
+    instanceName: instance1
+
+timeout:
+    tokenTimeout: 120
+    refreshTokenTimeout: 2592000
+    identifyCodeTimeout: 300
+file:
+#    腾讯云部署
+#    upload-path: /home/lcgl/lcgl-img/
+#    acess-path: http://123.206.67.214:8080/lcgl-img/
+    upload-path: E:\workSpace\ws-idea\lcgl-gws\build\libs\exploded\lcgl-gws-1.0-SNAPSHOT.war\lcgl-img\
+    acess-path: http://192.168.67.193:8088/lcgl-img/
+
+
+
+
+
+
+

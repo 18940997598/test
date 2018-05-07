@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kingsoft.lcgl.business.api.journal.mapper.JournalMapper">
+    <insert id="addJournal">
+        INSERT INTO journal(
+        creat_time,
+        operator_id,
+        content,
+        journal_type,
+        project_id,
+        task_id,
+        project_type_id,
+        remark
+        )
+        VALUES
+        (unix_timestamp(), #{userId}, #{content}, #{journalType}, #{projectId},#{taskId},#{projectType},#{remark})
+    </insert>
+
+    <select id="getDynamicNow" resultType="com.kingsoft.lcgl.business.api.journal.dto.JournalDto">
+      SELECT a.id,creat_time AS creatTime,operator_id AS operatorNameId,content,`user`.`name` AS operatorName,project_type_id AS projectType
+        FROM
+        (
+            (SELECT * FROM journal  ORDER BY id DESC LIMIT 3) as a LEFT JOIN `user` ON a.operator_id = `user`.id
+         )
+    </select>
+
+    <select id="getJournalByProjectId" resultType="com.kingsoft.lcgl.business.api.journal.dto.JournalDto">
+         SELECT a.id,creat_time AS creatTime,operator_id AS operatorNameId,content,`user`.`name` AS operatorName,project_type_id AS projectType,journal_type AS journalType,remark
+        FROM
+        (
+            (SELECT * FROM journal WHERE project_id = #{projectId} ORDER BY id ASC) as a LEFT JOIN `user` ON a.operator_id = `user`.id
+         )
+    </select>
+
+    <select id="getJournal" resultType="com.kingsoft.lcgl.business.api.journal.dto.JournalDto">
+        SELECT a.id,creat_time AS creatTime,operator_id AS operatorNameId,content,`user`.`name` AS operatorName,project_type_id AS projectType,journal_type AS journalType,remark
+        FROM
+        (
+            (
+            SELECT * FROM journal
+            <trim prefix="WHERE" prefixOverrides="AND |OR ">
+                creat_time BETWEEN #{startDate} and #{endDate}
+                <if test="projectType!=-1 and projectType!='' ">
+                    and  project_type_id = #{projectType}
+                </if>
+                AND content like CONCAT('%',#{content},'%')
+            </trim>
+
+            ORDER BY id ASC) as a LEFT JOIN `user` ON a.operator_id = `user`.id
+         )
+    </select>
+</mapper>
